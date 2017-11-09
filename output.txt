@@ -1,4 +1,5 @@
-FuncBlock->void FuncName(Paras){S}
+FuncBlock->DataType FuncName(Paras){SR}
+DataType->String
 FuncName->id
 Paras->Para Paras
 Para->DataType id
@@ -9,19 +10,23 @@ C->F Op F
 F->id
 Op->>
 F->num
-S->DataType Exp
-DataType->int
+S->Exp
+Exp->id=E;
+E->TE'
+T->FT'
+F->id
+T'->ε
+E'->+TE'
+T->FT'
+F->num
+T'->ε
+E'->ε
+S->Exp
 Exp->id=E;
 E->TE'
 T->FT'
 F->num
 T'->ε
 E'->ε
-S->DataType Exp
-DataType->int
-Exp->id=E;
-E->TE'
-T->FT'
-F->num
-T'->ε
-E'->ε
+R->return F;
+F->id

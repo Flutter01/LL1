@@ -4,9 +4,12 @@ import java.util.*;
  * Created by asus1 on 2017/11/9.
  */
 public class PPT {
+    /**
+     * 保存产生式右部 以从右向左方向保存 用于压栈
+     */
     private Map<Integer, ArrayList<Token>> PPT = new HashMap<>();
     public PPT (){
-        //"FuncBlock->void FuncName(Paras){S}"
+
         ArrayList<Token> production1 = new ArrayList<>();
         production1.add(new Token(Token.RIGHT_BRACE,"}"));
         production1.add(new Token(Token.S,"S"));
@@ -18,20 +21,18 @@ public class PPT {
         production1.add(new Token(Token.VOID,"void"));
         PPT.put(1,production1);
 
-        //"FuncBlock->DataType FuncName(Paras){SR}"
         ArrayList<Token> production2 = new ArrayList<>();
         production2.add(new Token(Token.RIGHT_BRACE,"}"));
         production2.add(new Token(Token.R,"R"));
         production2.add(new Token(Token.S,"S"));
         production2.add(new Token(Token.LEFT_BRACE,"{"));
-        production2.add(new Token(Token.RIGHT_BRACKET,")"));
+        production2.add(new Token(Token.RIGHT_PARENTHESE,")"));
         production2.add(new Token(Token.Paras,"Paras"));
-        production2.add(new Token(Token.LEFT_BRACKET,"("));
+        production2.add(new Token(Token.LEFT_PARENTHESE,"("));
         production2.add(new Token(Token.FuncName,"FuncName"));
         production2.add(new Token(Token.DataType,"DataType"));
         PPT.put(2,production2);
 
-        //"DataType->int"
         ArrayList<Token> production3 = new ArrayList<>();
         production3.add(new Token(Token.INT,"int"));
         PPT.put(3,production3);
@@ -100,88 +101,93 @@ public class PPT {
         PPT.put(14,production14);
 
         ArrayList<Token> production15 = new ArrayList<>();
-        production15.add(new Token(Token.SEMICOLON,";"));
-        production15.add(new Token(Token.E,"E"));
-        production15.add(new Token(Token.EQUAL,"="));
-        production15.add(new Token(Token.ID,"id"));
+        production15.add(new Token(Token.Exp,"Exp"));
         PPT.put(15,production15);
 
         ArrayList<Token> production16 = new ArrayList<>();
-        production16.add(new Token(Token.E1,"E'"));
-        production16.add(new Token(Token.T,"T"));
+        production16.add(new Token(Token.SEMICOLON,";"));
+        production16.add(new Token(Token.E,"E"));
+        production16.add(new Token(Token.EQUAL,"="));
+        production16.add(new Token(Token.ID,"id"));
         PPT.put(16,production16);
 
         ArrayList<Token> production17 = new ArrayList<>();
         production17.add(new Token(Token.E1,"E'"));
         production17.add(new Token(Token.T,"T"));
-        production17.add(new Token(Token.ADD,"+"));
         PPT.put(17,production17);
 
-        ArrayList<Token> production18 = new ArrayList<>();
+        ArrayList<Token> production18= new ArrayList<>();
+        production18.add(new Token(Token.E1,"E'"));
+        production18.add(new Token(Token.T,"T"));
+        production18.add(new Token(Token.ADD,"+"));
         PPT.put(18,production18);
 
         ArrayList<Token> production19 = new ArrayList<>();
-        production19.add(new Token(Token.T1,"T''"));
-        production19.add(new Token(Token.F,"F"));
         PPT.put(19,production19);
 
         ArrayList<Token> production20 = new ArrayList<>();
         production20.add(new Token(Token.T1,"T''"));
         production20.add(new Token(Token.F,"F"));
-        production20.add(new Token(Token.MUL,"*"));
         PPT.put(20,production20);
 
         ArrayList<Token> production21 = new ArrayList<>();
+        production21.add(new Token(Token.T1,"T''"));
+        production21.add(new Token(Token.F,"F"));
+        production21.add(new Token(Token.MUL,"*"));
         PPT.put(21,production21);
 
         ArrayList<Token> production22 = new ArrayList<>();
-        production22.add(new Token(Token.RIGHT_BRACKET,")"));
-        production22.add(new Token(Token.E,"E"));
-        production22.add(new Token(Token.LEFT_BRACKET,"("));
         PPT.put(22,production22);
 
         ArrayList<Token> production23 = new ArrayList<>();
-        production23.add(new Token(Token.NUMBER,"num"));
+        production23.add(new Token(Token.RIGHT_PARENTHESE,")"));
+        production23.add(new Token(Token.E,"E"));
+        production23.add(new Token(Token.LEFT_PARENTHESE,"("));
         PPT.put(23,production23);
 
         ArrayList<Token> production24 = new ArrayList<>();
-        production24.add(new Token(Token.ID,"id"));
+        production24.add(new Token(Token.NUMBER,"num"));
         PPT.put(24,production24);
 
         ArrayList<Token> production25 = new ArrayList<>();
-        production25.add(new Token(Token.F,"F'"));
-        production25.add(new Token(Token.Op,"OP"));
-        production25.add(new Token(Token.F,"F"));
+        production25.add(new Token(Token.ID,"id"));
         PPT.put(25,production25);
 
         ArrayList<Token> production26 = new ArrayList<>();
-        production26.add(new Token(Token.GREATER,">"));
+        production26.add(new Token(Token.F,"F'"));
+        production26.add(new Token(Token.Op,"OP"));
+        production26.add(new Token(Token.F,"F"));
         PPT.put(26,production26);
 
         ArrayList<Token> production27 = new ArrayList<>();
-        production27.add(new Token(Token.GREATER_EQUAL,">="));
+        production27.add(new Token(Token.GREATER,">"));
         PPT.put(27,production27);
 
         ArrayList<Token> production28 = new ArrayList<>();
-        production28.add(new Token(Token.LESS_EQUAL,"<="));
+        production28.add(new Token(Token.GREATER_EQUAL,">="));
         PPT.put(28,production28);
 
         ArrayList<Token> production29 = new ArrayList<>();
-        production29.add(new Token(Token.LESS,"<"));
+        production29.add(new Token(Token.LESS_EQUAL,"<="));
         PPT.put(29,production29);
 
         ArrayList<Token> production30 = new ArrayList<>();
-        production30.add(new Token(Token.DOUBLE_EQUAL,"=="));
+        production30.add(new Token(Token.LESS,"<"));
         PPT.put(30,production30);
 
         ArrayList<Token> production31 = new ArrayList<>();
-        production31.add(new Token(Token.NOT_EQUAL,"!="));
+        production31.add(new Token(Token.DOUBLE_EQUAL,"=="));
         PPT.put(31,production31);
 
         ArrayList<Token> production32 = new ArrayList<>();
         production32.add(new Token(Token.NOT_EQUAL,"!="));
-        production32.add(new Token(Token.RETURN,"return"));
-        PPT.put(32,production31);
+        PPT.put(32,production32);
+
+        ArrayList<Token> production33 = new ArrayList<>();
+        production33.add(new Token(Token.SEMICOLON,";"));
+        production33.add(new Token(Token.F,"F"));
+        production33.add(new Token(Token.RETURN,"return"));
+        PPT.put(33,production33);
 
     }
 
@@ -189,9 +195,12 @@ public class PPT {
         return this.PPT.get(No);
     }
 
-    public int getNonTerminal(int code){
+    /**
+     *     根据输入流读头所读非终结符Token的种别码 返回对应列号
+     */
+    public int getRowNo(int code){
         switch (code) {
-            // void int double char String id   (    )   ,    {   } return   ;   +   *   <   >  <=  >=  ==  !=  num if while = $
+            // void int double char String id   (    )   ,    {   } return   ;   +   *   <   >  <=  >=  ==  !=  num if while =  else   $
             case 5: return 0;
             case 7: return 1;
             case 10: return 2;

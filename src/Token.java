@@ -102,6 +102,7 @@ public class Token {
 		return "<" + this.code + "," + this.str + ">";
 	}
 
+
 	public int getCode(){
 		return code;
 	}
