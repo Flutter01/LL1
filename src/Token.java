@@ -18,7 +18,7 @@ public class Token {
 	public static final int STRING = 11;
 	public static final int IF = 12;
 	public static final int ELSE = 13;
-	public static final int DO = 14;
+	public static final int RETURN = 14;
 	public static final int WHILE = 15;
 	public static final int TRY = 16;
 	public static final int CATCH = 17;
@@ -63,16 +63,23 @@ public class Token {
 	public static final int NUMBER = 57;
 	public static final int END = 0;
 	public static final int ERROR = -1;
-	
-	public static final int S = 100;
-	public static final int E = 101;
-	public static final int E1 = 102;
-	public static final int T = 103;
-	public static final int T1 = 104;
-	public static final int F = 105;
-	public static final int C = 106;
-	public static final int C1 = 107;
-	public static final int D = 108;
+
+	//public static final int Program = 100;
+	public static final int FuncBlock = 100;
+	public static final int DataType = 101;
+	public static final int FuncName = 102;
+	public static final int Paras = 103;
+	public static final int Para = 104;
+	public static final int S = 105;
+	public static final int Exp = 106;
+	public static final int E = 107;
+	public static final int E1= 108;
+	public static final int T = 109;
+	public static final int T1 = 110;
+	public static final int F = 111;
+	public static final int C = 112;
+	public static final int Op = 113;
+	public static final int R = 114;
 	
 	private int code;
 	private String str;
@@ -94,11 +101,7 @@ public class Token {
 			return "Error:" + this.error;
 		return "<" + this.code + "," + this.str + ">";
 	}
-	
-	public String getStr(){
-		return str;
-	}
-	
+
 	public int getCode(){
 		return code;
 	}

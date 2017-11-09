@@ -2,85 +2,73 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 public class LL1parse {
     private static ArrayList<Token> tokens;
     private static ArrayList<String> output = new ArrayList<>();
-    private static Queue queue;
-    private static Stack stack;
+    private static Stack<Token> stack;
     private static String[] generations = {
-/*
-            "S->id=E;",
-            "S->if(C){S}else{S}",
-            "S->while(C){S}",
-            "E->TE'",
-            "E'->+TE'",
-            "E'->ε",
-            "T->FT'",
-            "T'->*FT'",
-            "T'->ε",
-            "F->(E)",
-            "F->num",
-            "F->id",
-            "C->DC'",
-            "C'->||DC'",
-            "C'->ε",
-            "D->(C)",
-            "D->id==num"
-
-*/
 /**
- * 用来判断一个函数的文法 可以匹配的范围是声明函数，if else while循环 定义变量 *+运算
+ * 用来判断一个函数的文法 可以匹配的范围是声明函数，if else while循环 定义变量 *+运算 函数返回值只能是一个标识符
 */
-            "Program->FuncBlock", //可以去掉？？？
-            "FuncBlock->void FuncName(Paras){S}",
-            "FuncBlock->DataType FuncName(Paras){SR}",
-            "DataType->int",
-            "DataType->double",
-            "DataType->char",
-            "DataType->String",
-            "FuncName->id",
-            "Paras->Para Paras",
-            "Paras->,Para",
-            "Paras->ε",
-            "Para->DataType id",
-            "S->DataType Exp",
-            "S->if{S}else{S}",
-            "S->while(C){S}",
-            "Exp->id=E;",
-            "E->TE'",
-            "E'->+TE'",
-            "E'->ε",
-            "T->FT'",
-            "T'->*FT'",
-            "T'->ε",
-            "F->(E)",
-            "F->num",
-            "F->id",
-            "C->F Op F",
-            "Op->>",
-            "Op->>=",
-            "Op-><=",
-            "Op-><",
-            "Op->==",
-            "Op->!=",
-            "R->return F"
-    };
-    private static int[][] table = {
-            //   id	=	;	if	(	)	{	}	e	w	+	*	n	||	==	$
-            {0,	-1,	-1,	1,	-1,	-1,	-1,	-1,	-1,	2,	-1,	-1,	-1,	-1,	-1,	-1},//S
-            {3,	-1,	-1,	-1,	3,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	3,	-1,	-1,	-1},//E
-            {-1,-1,	5,	-1,	-1,	5,	-1,	-1,	-1,	-1,	4,	-1,	-1,	-1,	-1,	5},//E'
-            {6,	-1,	-1,	-1,	6,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	6,	-1,	-1,	-1},//T
-            {-1,-1,	8,	-1,	-1,	8,	-1,	-1,	-1,	-1,	8,	7,	-1,	-1,	-1,	8},//T'
-            {11,-1,	-1,	-1,	9,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	10,	-1,	-1,	-1},//F
-            {12,-1,	-1,	-1,	12,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1},//C
-            {-1,-1,	-1,	-1,	-1,	14,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	13,	-1,	14},//C'
-            {16,-1,	-1,	-1,	15,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1}//D
+          //  "Program->FuncBlock", //可以去掉？？？0
+            "FuncBlock->void FuncName(Paras){S}",//1
+            "FuncBlock->DataType FuncName(Paras){SR}",//2
+            "DataType->int",//3
+            "DataType->double",//4
+            "DataType->char",//5
+            "DataType->String",//6
+            "FuncName->id",//7
+            "Paras->Para Paras",//8
+            "Paras->,Para",//9
+            "Paras->ε",//10
+            "Para->DataType id",//11
+            "S->DataType Exp",//12
+            "S->if(C){S}else{S}",//13
+            "S->while(C){S}",//14
+            "Exp->id=E;",//15
+            "E->TE'",//16
+            "E'->+TE'",//17
+            "E'->ε",//18
+            "T->FT'",//19
+            "T'->*FT'",//20
+            "T'->ε",//21
+            "F->(E)",//22
+            "F->num",//23
+            "F->id",///24
+            "C->F Op F",//25
+            "Op->>",//26
+            "Op->>=",//27
+            "Op-><=",//28
+            "Op-><",//29
+            "Op->==",//30
+            "Op->!=",//31
+            "R->return F;"//32
     };
 
-    private static void output(){
+    private static int[][] ppt = {
+        // void int double char String id   (    )   ,    {   } return   ;   +   *   <   >  <=  >=  ==  !=  num if while =  else   $
+          //  {0,  0,   0,    0,    0,   -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},//Program
+            {1,  2,   2,    2,    2,   -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//FuncBlock
+            {-1, 3,   4,    5,    6,   -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//DataType
+            {-1, -1,  -1,   -1,   -1,   7,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//FuncName
+            {-1, 8,   8,    8,    8,   -1,  -1, 10, 9,   -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//Paras
+            {-1, 11,  11,   11,   11,  -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//Para
+            {-1, 12,  12,   12,   12,  -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, 14, -1, -1, -1 },//S
+            {-1, -1,  -1,   -1,   -1,  15,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//Exp
+            {-1, -1,  -1,   -1,   -1,  16,  16, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, 16, -1, -1, -1, -1, -1 },//E
+            {-1, -1,  -1,   -1,   -1,  -1,  -1, -1, -1,  -1, -1,  -1,   18, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//E'
+            {-1, -1,  -1,   -1,   -1,  19,  19, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, -1, -1, -1, -1, -1 },//T
+            {-1, -1,  -1,   -1,   -1,  -1,  -1, -1, -1,  -1, -1,  -1,   21, 21, 20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },//T'
+            {-1, -1,  -1,   -1,   -1,  24,  22, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, 23, -1, -1, -1, -1, -1 },//F
+            {-1, -1,  -1,   -1,   -1,  25,  25, -1, -1,  -1, -1,  -1,   -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, -1 },//C
+            {-1, -1,  -1,   -1,   -1,  -1,  -1, -1, -1,  -1, -1,  -1,   -1, -1, -1, 29, 26, 28, 27, 30, 31, -1, -1, -1, -1, -1, -1 },//Op
+            {-1, -1,  -1,   -1,   -1,  -1,  -1, -1, -1,  -1, -1,  32,   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 } //R
+
+    };
+
+    public void output(){
         try {
             File outputFile = new File("output.txt");
             if (!outputFile.exists())
@@ -99,23 +87,25 @@ public class LL1parse {
         }
     }
 
-    private static void parse(){
+    public void parse(){
         Token t1 = null;
         Token t2 = null;
-
-        while(queue.get().getCode()!= Token.END){
-            t1 = stack.get();
-            t2 = queue.get();
+        stack = new Stack<Token>();
+        stack.push(new Token(Token.FuncBlock, "FuncBlock"));
+        while(tokens.get(0).getCode()!= Token.END){
+            t1 = stack.peek();
+            t2 = tokens.get(0);
+            System.out.println(t1.getCode()+"@@@"+t2.getCode());
             if(t1.getCode()>99){//非终结符
                 if(!generate(t1, t2.getCode())){
-                    System.out.println("Error1!");
+                    System.out.print("Error1!");
                     return;
                 }
             }
             else{//终结符
                 if(t1.getCode()==t2.getCode()){//匹配成功
                     stack.pop();
-                    queue.dequeue();
+                    tokens.remove(0);
                 }
                 else{//否则报错
                     System.out.println("Error2!");
@@ -125,108 +115,38 @@ public class LL1parse {
         }
         System.out.println("Done!");
     }
-
-    private static boolean generate(Token nts, int next){
+    private static boolean pushProduce(int code) {
+        PPT table = new PPT();
+        if(table.getPPTCell(code)==null) {
+            System.out.println("Error4!");
+            return false;
+        }
+        if(table.getPPTCell(code).size()>0) {
+            for(Token t:table.getPPTCell(code)){
+                stack.push(t);
+            }
+        }
+        return true;
+    }
+    private static boolean generate(Token currentToken, int next){
+        PPT p = new PPT();
         try {
-            int gi = table[nts.getCode()-100][getHeadIndex(next)];//查表
-            if(gi<0){
-                System.out.println("Error3!");
+            int shift = ppt[currentToken.getCode()-100][p.getNonTerminal(next)];//查表 3
+            if(shift<0){
+                System.out.println("未定义该种表达式");
                 return false;
             }
-            output.add(generations[gi]);//产生式添加到输出队列
+            output.add(generations[shift-1]);//产生式添加到输出队列
             stack.pop();
-            switch (gi) {
-                case 0:
-                    stack.push(new Token(Token.SEMICOLON,";"));
-                    stack.push(new Token(Token.E, "E"));
-                    stack.push(new Token(Token.EQUAL, "="));
-                    stack.push(new Token(Token.ID, "id"));
-                    break;
-                case 1:
-                    stack.push(new Token(Token.RIGHT_BRACE,"}"));
-                    stack.push(new Token(Token.S,"S"));
-                    stack.push(new Token(Token.LEFT_BRACE,"{"));
-                    stack.push(new Token(Token.ELSE, "else"));
-                    stack.push(new Token(Token.RIGHT_BRACE,"}"));
-                    stack.push(new Token(Token.S,"S"));
-                    stack.push(new Token(Token.LEFT_BRACE,"{"));
-                    stack.push(new Token(Token.RIGHT_PARENTHESE,")"));
-                    stack.push(new Token(Token.C,"C"));
-                    stack.push(new Token(Token.LEFT_PARENTHESE,"("));
-                    stack.push(new Token(Token.IF,"if"));
-                    break;
-                case 2:
-                    stack.push(new Token(Token.RIGHT_BRACE,"}"));
-                    stack.push(new Token(Token.S,"S"));
-                    stack.push(new Token(Token.LEFT_BRACE,"{"));
-                    stack.push(new Token(Token.RIGHT_PARENTHESE,")"));
-                    stack.push(new Token(Token.C,"C"));
-                    stack.push(new Token(Token.LEFT_PARENTHESE,"("));
-                    stack.push(new Token(Token.WHILE,"while"));
-                    break;
-                case 3:
-                    stack.push(new Token(Token.E1,"E'"));
-                    stack.push(new Token(Token.T,"T"));
-                    break;
-                case 4:
-                    stack.push(new Token(Token.E1,"E'"));
-                    stack.push(new Token(Token.T,"T"));
-                    stack.push(new Token(Token.ADD,"+"));
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    stack.push(new Token(Token.T1,"T'"));
-                    stack.push(new Token(Token.F,"F"));
-                    break;
-                case 7:
-                    stack.push(new Token(Token.T1,"T'"));
-                    stack.push(new Token(Token.F,"F"));
-                    stack.push(new Token(Token.MUL,"*"));
-                    break;
-                case 8:
-                    break;
-                case 9:
-                    stack.push(new Token(Token.RIGHT_PARENTHESE,")"));
-                    stack.push(new Token(Token.E,"E"));
-                    stack.push(new Token(Token.LEFT_PARENTHESE,"("));
-                    break;
-                case 10:
-                    stack.push(new Token(Token.NUMBER,"num"));
-                    break;
-                case 11:
-                    stack.push(new Token(Token.ID,"id"));
-                    break;
-                case 12:
-                    stack.push(new Token(Token.C1,"C'"));
-                    stack.push(new Token(Token.D,"D"));
-                    break;
-                case 13:
-                    stack.push(new Token(Token.C1,"C'"));
-                    stack.push(new Token(Token.D,"D"));
-                    stack.push(new Token(Token.DOUBLE_OR,"||"));
-                    break;
-                case 14:
-                    break;
-                case 15:
-                    stack.push(new Token(Token.RIGHT_PARENTHESE,")"));
-                    stack.push(new Token(Token.C,"C"));
-                    stack.push(new Token(Token.LEFT_PARENTHESE,"("));
-                    break;
-                case 16:
-                    stack.push(new Token(Token.NUMBER,"num"));
-                    stack.push(new Token(Token.DOUBLE_EQUAL,"=="));
-                    stack.push(new Token(Token.ID,"id"));
-                    break;
-                default:
-                    System.out.println("Error4!");
-                    return false;
-            }
-            return true;
+            return pushProduce(shift);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Error5!");
             return false;
         }
     }
+    public void setTokens(ArrayList<Token> tokenList) {
+        tokens = tokenList;
+    }
+
 }

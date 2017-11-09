@@ -1,36 +1,26 @@
-S->while(C){S}
-C->DC'
-D->id==num
-C'->ε
+FuncBlock->void FuncName(Paras){S}
+FuncName->id
+Paras->Para Paras
+Para->DataType id
+DataType->int
+Paras->ε
 S->if(C){S}else{S}
-C->DC'
-D->id==num
-C'->||DC'
-D->id==num
-C'->ε
-S->id=E;
-E->TE'
-T->FT'
+C->F Op F
+F->id
+Op->>
 F->num
-T'->*FT'
-F->(E)
+S->DataType Exp
+DataType->int
+Exp->id=E;
 E->TE'
-T->FT'
-F->num
-T'->ε
-E'->+TE'
 T->FT'
 F->num
 T'->ε
 E'->ε
-T'->ε
-E'->ε
-S->id=E;
+S->DataType Exp
+DataType->int
+Exp->id=E;
 E->TE'
-T->FT'
-F->num
-T'->ε
-E'->+TE'
 T->FT'
 F->num
 T'->ε

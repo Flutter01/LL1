@@ -20,8 +20,8 @@ public class Analyzer {
 	// 以下是可识别的单词符号
 	private static String[] reservedWords = { "class", "public", "protected",
 			"private", "void", "static", "int", "char", "float", "double",
-			"string", "if", "else", "do", "while", "try", "catch", "switch",
-			"case" ,"for" };     //这里要加一个return
+			"string", "if", "else", "return", "while", "try", "catch", "switch",
+			"case" ,"for" };
 
 //	 private static String[] operators =
 //	 {"+","+=","-","-=","*","*=","/","/=","=","==","&","|","&&","||","!","!="
@@ -48,23 +48,6 @@ public class Analyzer {
 		}
 		input[p] = '#';
 		br2.close();
-	}
-
-	@SuppressWarnings("unused")
-	private static void output() throws IOException{
-
-		String[] splits = inputFile.split("\\.");
-		File outputFile = new File(splits[0]+".output");
-		if (!outputFile.exists())
-			outputFile.createNewFile();
-		BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile, false));
-		for(Token t:output){
-			System.out.println(t.toString());
-			bw.write(t.toString());
-			bw.newLine();
-		}
-		bw.flush();
-		bw.close();
 	}
 	
 	private static void scanner() {
@@ -251,7 +234,7 @@ public class Analyzer {
 		return String.valueOf(c).substring(0, len);
 	}
 
-	public static ArrayList<Token> getTokens(){
+	public ArrayList<Token> getTokens(){
 		try {
 			getInput();
 		} catch (IOException e1) {
@@ -280,12 +263,6 @@ public class Analyzer {
 				break;
 			}
 		} while (input[p] != '#');
-//		try {
-//			output();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		return output;
 	}
 
