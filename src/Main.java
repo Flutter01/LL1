@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class main {
     public static void main(String[] args)throws Exception {
         InfoHandle infoHandle = new InfoHandle();
-        Analyzer analyzer = new Analyzer();
-        ArrayList<Token> tokens = analyzer.getTokens(infoHandle.getInput());
+        Analyzer analyzer = new Analyzer(infoHandle.getInput());
+        ArrayList<Token> tokens = analyzer.scanner();
         LL1parse ll1parse = new LL1parse(tokens);
         infoHandle.output(ll1parse.getOutput());
     }

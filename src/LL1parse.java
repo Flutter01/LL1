@@ -120,7 +120,6 @@ public class LL1parse {
             stack.pop();//弹出栈顶非终结符
             return pushProduce(shift);
         } catch (Exception e) {
-            System.out.println("Error5!");
             return false;
         }
     }
